@@ -7,9 +7,9 @@
 
 typedef struct student_info
 {
-    uint32_t std_id;
-    uint32_t std_age;
-    uint32_t std_score;
+    uint32_t u32_id;
+    uint32_t u32_age;
+    uint32_t u32_score;
 }ST_STUDENT_INFO;
 
 
@@ -31,9 +31,9 @@ void print_student_info(const ST_STUDENT_INFO *std_info)
 {
     assert(std_info);
 
-    printf("id   : %u\n", std_info->std_id);
-    printf("age  : %u\n", std_info->std_age);
-    printf("score: %u\n", std_info->std_score);
+    printf("id   : %u\n", std_info->u32_id);
+    printf("age  : %u\n", std_info->u32_age);
+    printf("score: %u\n", std_info->u32_score);
 
     return;
 }
@@ -49,9 +49,9 @@ ST_STUDENT_INFO *make_student_info(time_t timer)
     }
     
     srand(timer);
-    std_info->std_id    = 10000 + rand() % 9999;
-    std_info->std_age   = rand() % 30;
-    std_info->std_score = rand() % 101;
+    std_info->u32_id    = 10000 + rand() % 9999;
+    std_info->u32_age   = rand() % 30;
+    std_info->u32_score = rand() % 101;
     print_student_info(std_info);
 
     return std_info;
@@ -62,8 +62,6 @@ void *consumer_proc(void *arg)
 {
     ST_RING_BUFFER *ring_buf = (ST_RING_BUFFER *)arg;
     ST_STUDENT_INFO std_info;
-
-    printf("Entry producer thread...\n");
     
     while(1)
     {
@@ -88,8 +86,6 @@ void *producer_proc(void *arg)
     time_t   cur_time;
     uint32_t u32Seed = 0;
 
-    printf("Entry producer thread...\n");
-
     while(1)
     {
         time(&cur_time);
@@ -102,7 +98,6 @@ void *producer_proc(void *arg)
         printf("Put a student info to ring_buffer.\n");
         ring_buffer_put(ring_buf, (void *)std_info, sizeof(ST_STUDENT_INFO));
         printf("ring_buffer length: %u\n", ring_buffer_len(ring_buf));
-        print_student_info(std_info);
         printf("--------------------------------------------------------\n");        
 
         sleep(1);
@@ -112,7 +107,7 @@ void *producer_proc(void *arg)
 }
 
 
-int consumer_thread(void *arg)
+pthread_t consumer_thread(void *arg)
 {
     int err = 0;
     pthread_t tid;
@@ -128,7 +123,7 @@ int consumer_thread(void *arg)
 }
 
 
-int producer_thread(void *arg)
+pthread_t producer_thread(void *arg)
 {
     int err = 0;
     pthread_t tid;
